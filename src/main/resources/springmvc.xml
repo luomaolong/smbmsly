@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context-3.2.xsd
+                           http://www.springframework.org/schema/mvc
+                           http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
+     <!-- 1.扫描控制器所在的包 -->
+     <context:component-scan base-package="com.smbms.ssm.controller"/> 
+     <!-- 2.开启注解驱动 -->
+    <!--  <mvc:annotation-driven/> -->
+    <mvc:annotation-driven>
+    	<mvc:message-converters>
+    		<!-- 配置springmvc返回json数据中，中文乱码问题的消息转换器 -->
+    		<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+    			<property name="supportedMediaTypes">
+    				<list>
+    					<value>application/json;charset=UTF-8</value>
+    				</list>
+    			</property>
+    		</bean>
+    		<!-- 配置springmvc返回json数据中日期格式化的问题的消息转换器 -->
+    		<bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+    			<property name="supportedMediaTypes">
+	               <list>
+	                  <value>text/html;charset=UTF-8</value>
+	                  <value>application/json</value>
+	               </list>
+	            </property>
+    			<property name="features">
+    				<list>
+    					<value>WriteDateUseDateFormat</value>
+    				</list>
+    			</property>
+    		</bean>
+    	</mvc:message-converters>
+    </mvc:annotation-driven>   
+     
+     <!-- 3.配置试图解析器 -->   
+    <!--  <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+     	<property name="prefix" value="/WEB-INF/view/"/>记得在相应的位置去创建view文件夹
+     	<property name="suffix" value=".jsp"/>
+     </bean>  -->
+     
+     
+     <!-- 配置多视图解析器 -->
+     <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+     	<!-- <property name="favorParameter" value="true"/> -->
+     	<property name="mediaTypes">
+     		<map>
+     			<entry key="json" value="application/json;charset=UTF-8"/>
+     			<entry key="html" value="application/html;charset=UTF-8"/>
+     			<entry key="xml" value="application/xml;charset=UTF-8"/>
+     		</map>
+     	</property>
+     	<!-- 配置页面视图解析器 -->
+     	<property name="viewResolvers">
+     		<list>
+     			<!-- <ref bean="viewResolver"/> -->
+     			 <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+			     	<property name="prefix" value="/WEB-INF/view/"/><!-- 记得在相应的位置去创建view文件夹 -->
+			     	<property name="suffix" value=".jsp"/>
+			     </bean> 
+     		</list>
+     	</property>
+     </bean>
+     
+     <!-- 4.配置放行静态资源 -->  
+     <!-- 
+     	mapping：将静态资源映射到指定的路径下
+		location：本地静态资源文件所在的目录
+      -->
+     <mvc:resources location="/css/" mapping="/css/**"/><!-- 记得在相应的位置去创建static文件夹 -->
+     <mvc:resources location="/img/" mapping="/img/**"/>
+     <mvc:resources location="/js/" mapping="/js/**"/>    
+     
+     
+     <!-- 文件上传的配置 -->
+     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+     	<property name="defaultEncoding" value="UTF-8"/>
+     	<property name="maxUploadSize" value="5000000"/>
+     </bean>   
+</beans>
